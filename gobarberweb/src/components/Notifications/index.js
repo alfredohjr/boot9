@@ -1,63 +1,70 @@
-import React from 'react';
-
+import React, { useState, useEffect, useMemo } from 'react';
 import { MdNotifications } from 'react-icons/md';
+
+import {parseISO, formatDistance } from 'date-fns';
+import pt from 'date-fns/locale/pt';
+
+import api from '~/services/api';
 
 import { Container, Badge, Notification, NotificationList, Scroll } from './styles';
 
 export default function Notifications() {
+  const [visible, setVisible] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  const hasUnread = useMemo(
+    () => !!notifications.find(notification => notification.read === false)
+    [notifications]
+  );
+
+  useEffect(() => {
+    async function loadNotifications(){
+      const response = await api.get('notifications');
+
+      const data = response.data.map(notification => ({
+        ...notification,
+        timeDistance: formatDistance(
+          parseISO(notification.createAt),
+          new Date(),
+          { addSuffix : true }
+        )  
+      }))
+
+      loadNotifications(data);
+    }
+  }, []);
+
+  function handleToggleVisible(){
+    setVisible(!visible);
+  }
+
+  async function handleMarkAsRead(id) {
+    await api.put(`notifications/${id}`);
+
+    setNotifications(
+      notifications.map(notification =>
+        notification._id === id ? { ...notification, read: true} : notification
+      )
+    );
+  }
+
   return (
     <Container>
-      <Badge hasUnread>
+      <Badge onClick={handleToggleVisible} hasUnread={hasUnread}>
         <MdNotifications color="#7159c1" size={20} />
       </Badge>
 
       <NotificationList>
         <Scroll>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
+          {notifications.map(notification => (
+          <Notification key={notification._id} unread={!notification.read}>
+            <p>{notification.content}</p>
+          <time>{notification.timeDistance}</time>
+          {!notification.read && (
+            <button type="button" onClick={() => handleMarkAsRead(notification._id)}>Marcar como lida</button>
+          )}
           </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
-          <Notification unread>
-            <p>Aqui mesmo</p>
-            <time>há mais de 2 dias</time>
-            <button type="button">Marcar como lida!</button>
-          </Notification>
+          ))}
         </Scroll>
       </NotificationList>
     </Container>
