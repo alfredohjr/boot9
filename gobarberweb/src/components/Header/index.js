@@ -10,7 +10,8 @@ import { Container, Content, Profile } from './styles';
 
 export default function Header() {
   const profile = useSelector(state => state.user.profile);
-
+  console.tron.log(profile);
+  
   return (
     <Container>
       <Content>
@@ -29,7 +30,7 @@ export default function Header() {
             <img src={
               profile.avatar.url || 'https://api.adorable.io/avatars/50/abott@adorable.png'
             }
-                alt="Alfredo Holz Junior" />
+                alt={profile.name}/>
           </Profile>
         </aside>
       </Content>

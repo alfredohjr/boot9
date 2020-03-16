@@ -12,11 +12,11 @@ export const Container = styled.div`
         }
 
         img {
+            display: inline-block;
             height: 120px;
             width: 120px;
             border-radius: 50%;
             border: 3px solid rgba(255,255,255,.3);
-            background: #eee;
         }
 
         input {

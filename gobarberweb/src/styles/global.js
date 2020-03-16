@@ -41,4 +41,8 @@ export default createGlobalStyle`
     cursor: pointer;
   }
 
+  :root {
+    --primary-color: #7159c1;
+  }
+
 `;

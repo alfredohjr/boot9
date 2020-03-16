@@ -13,7 +13,7 @@ export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
 
   const hasUnread = useMemo(
-    () => !!notifications.find(notification => notification.read === false)
+    () => !!notifications.find(notification => notification.read === false),
     [notifications]
   );
 
@@ -24,14 +24,16 @@ export default function Notifications() {
       const data = response.data.map(notification => ({
         ...notification,
         timeDistance: formatDistance(
-          parseISO(notification.createAt),
+          parseISO(notification.createdAt),
           new Date(),
-          { addSuffix : true }
-        )  
+          { addSuffix : true, locale: pt }
+        ),  
       }))
 
-      loadNotifications(data);
+      setNotifications(data);
     }
+
+    loadNotifications();
   }, []);
 
   function handleToggleVisible(){
@@ -54,7 +56,7 @@ export default function Notifications() {
         <MdNotifications color="#7159c1" size={20} />
       </Badge>
 
-      <NotificationList>
+      <NotificationList visible={visible}>
         <Scroll>
           {notifications.map(notification => (
           <Notification key={notification._id} unread={!notification.read}>
