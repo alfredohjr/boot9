@@ -17,7 +17,7 @@ class ScheduleController {
 
     const { date } = req.query;
     const parsedDate = parseISO(date);
-
+    console.log(parsedDate);
     const appointments = await Appointment.findAll({
       where: {
         appointment_id: req.userId,
@@ -29,8 +29,8 @@ class ScheduleController {
       include:[
         {
           model: User,
-          as: 'user',
-          attributes: 'name',
+          as: 'provider',
+          attributes: ['id','name'],
         }
       ],
       order: ['date'],
